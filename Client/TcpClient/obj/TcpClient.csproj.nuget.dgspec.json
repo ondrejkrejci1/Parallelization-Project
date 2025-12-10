@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\TCP\\Server\\TcpClient\\TcpClient\\TcpClient\\TcpClient.csproj": {}
+    "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\TcpClient.csproj": {}
   },
   "projects": {
-    "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\TCP\\Server\\TcpClient\\TcpClient\\TcpClient\\TcpClient.csproj": {
+    "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\TcpClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\TCP\\Server\\TcpClient\\TcpClient\\TcpClient\\TcpClient.csproj",
+        "projectUniqueName": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\TcpClient.csproj",
         "projectName": "TcpClient",
-        "projectPath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\TCP\\Server\\TcpClient\\TcpClient\\TcpClient\\TcpClient.csproj",
+        "projectPath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\TcpClient.csproj",
         "packagesPath": "C:\\Users\\42060\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\TCP\\Server\\TcpClient\\TcpClient\\TcpClient\\obj\\",
+        "outputPath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\42060\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -44,6 +44,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[10.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
