@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-
+            ImageClient client = new ImageClient();
+            client.Connect();
 
         }
     }
