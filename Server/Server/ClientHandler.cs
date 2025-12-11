@@ -5,7 +5,7 @@ namespace Server
 {
     public class ClientHandler
     {
-        private TcpClient client;
+        public TcpClient Client { get; private set; }
         private Thread clientHandler;
         public string Name { get; private set; }
         public StreamReader Reader { get; private set; }
@@ -15,7 +15,7 @@ namespace Server
 
         public ClientHandler(TcpClient client, Server server)
         {
-            this.client = client;
+            Client = client;
             this.server = server;
             clientHandler = new Thread(Run);
             clientHandler.Start();
@@ -25,8 +25,8 @@ namespace Server
         {
             try
             {
-                Reader = new StreamReader(client.GetStream(), Encoding.UTF8);
-                Writer = new StreamWriter(client.GetStream(), Encoding.UTF8) { AutoFlush = true };
+                Reader = new StreamReader(Client.GetStream(), Encoding.UTF8);
+                Writer = new StreamWriter(Client.GetStream(), Encoding.UTF8) { AutoFlush = true };
 
                 server.AddClient(this);
 
@@ -60,7 +60,7 @@ namespace Server
             {
                 Reader.Close();
                 Writer.Close();
-                client.Close();
+                Client.Close();
             }
             catch (Exception ex)
             {

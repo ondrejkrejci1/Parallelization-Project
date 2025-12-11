@@ -15,7 +15,7 @@ namespace Server
             {
                 { "help", new Help() },
                 { "exit", new Exit() },
-                { "uploadimage", new UploadImage() },
+                { "uploadimage", new UploadImage(clientHandler) },
                 { "downloadimage", new DownloadImage() },
                 { "listimage", new ListImage() }
             };
@@ -23,7 +23,6 @@ namespace Server
 
         private void Do()
         {
-            clientHandler.Writer.Write(">> ");
             string commandInput = clientHandler.Reader.ReadLine();
             try
             {
@@ -32,7 +31,7 @@ namespace Server
 
                 if (commands.ContainsKey(commandInput))
                 {
-                    clientHandler.Writer.WriteLine(commands[commandInput].Execute());
+                    clientHandler.Writer.WriteLine("<< " + commands[commandInput].Execute());
                     isRunning = !commands[commandInput].Exit();
                 }
                 else
