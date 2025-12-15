@@ -1,8 +1,8 @@
+using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Configuration;
-using System.Net.Http;
+using System.Drawing;
 
 namespace TcpClient
 {
@@ -10,10 +10,11 @@ namespace TcpClient
     {
         private Thread receiveMessages;
         private bool isRunning = true;
-
         private StreamReader reader;
         private StreamWriter writer;
         private System.Net.Sockets.TcpClient client;
+        private string lastMessage;
+        private bool pauseReadCylce = false;
 
         public ImageClient()
         {
@@ -29,14 +30,14 @@ namespace TcpClient
                 IPAddress ip = IPAddress.Parse(appSettings["IpAddress"]);
                 int port = int.Parse(appSettings["Port"]);
 
-                using (this.client = new System.Net.Sockets.TcpClient())
+                using (client = new System.Net.Sockets.TcpClient())
                 {
                     client.Connect(ip, port);
 
                     using (NetworkStream stream = client.GetStream())
                     {
-                        this.reader = new StreamReader(stream, Encoding.UTF8);  //prijima zpravy
-                        this.writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true }; //posila zpravy
+                        reader = new StreamReader(stream, Encoding.UTF8);  //prijima zpravy
+                        writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true }; //posila zpravy
 
                         receiveMessages = new Thread(ReceiveLoop);
                         receiveMessages.Start();
@@ -48,23 +49,19 @@ namespace TcpClient
                         {
                             if (uploadMode)
                             {
-                                string nameAndSize = Console.ReadLine();
-                                writer.WriteLine(nameAndSize);
-                                
-                                Console.WriteLine("Enter the full path to the image file to upload:\n>> ");
-                                string path = Console.ReadLine();
-
-                                string nameAndPath = nameAndSize.Split(' ')[0].Trim() + " " + path.Trim();
+                                UploadImage();
+                                uploadMode = false;
                             }
                             else if (downloadMode)
                             {
-                                
+                                DownloadImage();
+                                downloadMode = false;
                             }
                             else
                             {
+                                Thread.Sleep(10);
                                 Console.Write(">> ");
-                                string message = Console.ReadLine();
-                                message = message.Trim();
+                                string message = Console.ReadLine().Trim();
 
                                 if (string.IsNullOrEmpty(message)) continue;
 
@@ -80,6 +77,10 @@ namespace TcpClient
                                 else if (message.ToLower() == "uploadimage")
                                 {
                                     uploadMode = true;
+                                }
+                                else if (message.ToLower() == "downloadimage")
+                                {
+                                    downloadMode = true;
                                 }
 
                                 SendMessage(message);
@@ -115,15 +116,19 @@ namespace TcpClient
             {
                 while (isRunning)
                 {
+                    
                     string serverMessage = reader.ReadLine();
+                    lastMessage = serverMessage;
 
                     if (serverMessage == null)
                     {
                         Console.WriteLine("\n[SERVER CLOSED THIS CONNECTION]");
                         break;
                     }
-
-                    Console.Write("\n" + serverMessage);
+                    if (pauseReadCylce == false)
+                    {
+                        Console.Write(serverMessage + "\n");
+                    }
                 }
             }
             catch (IOException)
@@ -152,92 +157,365 @@ namespace TcpClient
             }
         }
 
-        public void UploadImage(string commandInput)
+        private void UploadImage()
         {
-            // Oƒçek√°van√Ω vstup od u≈æivatele: "uploadimage C:\cesta\k\souboru.jpg"
-            string[] parts = commandInput.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
+            string fileNameAndSize = "";
+            bool fileNameReady = false;
+
+            while (!fileNameReady)
             {
-                throw new InvalidDataException("Error- Usage: uploadimage <local_file_path>");
+                fileNameAndSize = Console.ReadLine();
+
+                string[] specification = fileNameAndSize.Split(' ', 2);
+
+                string[] suffixes = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tif", ".tiff", ".svg" };
+
+                if (specification.Length == 2 || long.TryParse(specification[1], out long expectedSize))
+                {
+                    foreach (string suffix in suffixes)
+                    {
+                        if (specification[0].EndsWith(suffix))
+                        {
+                            fileNameReady = true;
+                        }
+                    }
+
+                    if (!fileNameReady)
+                    {
+                        Console.Write("Check if you include suffix in your file name. \nEntry again: ");
+                    }
+                }
             }
 
-            string localFilePath = parts[1].Trim();
+            SendMessage(fileNameAndSize);
+            Thread.Sleep(100);
 
-            if (!File.Exists(localFilePath))
+            if (lastMessage.StartsWith("ERROR:"))
             {
-                throw new FileNotFoundException("Local file not found.", localFilePath);
+                return;
             }
 
-            byte[] imageData = File.ReadAllBytes(localFilePath);
+            string fullPath;
+
+            while (true)
+            {
+                fullPath = FileExists(fileNameAndSize.Split(' ', 2)[0]);
+
+                if (IsImageFile(fullPath) == true)
+                {
+                    break;
+                }
+                Console.WriteLine("The file is not a image.");
+            }
+            
+
+            byte[] imageData = File.ReadAllBytes(fullPath);
             long fileSize = imageData.LongLength;
-            string fileName = Path.GetFileName(localFilePath);
+            try
+            {
+                NetworkStream stream = client.GetStream();
+                stream.Write(imageData, 0, imageData.Length);
+                stream.Flush();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while uploading: {ex.Message}");
+            }
 
-            // Zpr√°va pro druhou f√°zi handshaku
-            string specificationMessage = $"{fileName} {fileSize}";
+            if (lastMessage.StartsWith("SUCCESS:"))
+            {
+                Console.WriteLine("Image uploaded successfully.");
+            }
+            else if (lastMessage.StartsWith("ERROR:"))
+            {
+                Console.WriteLine("Error occurred during image upload.");
+            }
+
+        }
+
+        private string FileExists(string fileName)
+        {
+
+            string fullPath = "";
+            bool fileExists = false;
+
+            while (!fileExists)
+            {
+                Console.WriteLine("Enter full path of image: ");
+                fullPath = Console.ReadLine().Trim();
+
+                if (fullPath == "exit")
+                {
+                    return "exit";
+                }
+
+
+                if (File.Exists(fullPath) )
+                {
+                    fileExists = true;
+                }
+                if (File.Exists(Path.Combine(fullPath,fileName)))
+                {
+                    fullPath = Path.Combine(fullPath, fileName);
+                    fileExists = true;
+                }
+
+            }
+
+            return fullPath;
+        }
+        private bool IsImageFile(string path)
+        {
+            try
+            {
+                using (Image img = Image.FromFile(path))
+                {
+                    return true;
+                }
+            }
+            catch (OutOfMemoryException)
+            {
+                return false;
+            }
+            catch (FileNotFoundException)
+            {
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private void DownloadImage()
+        {
+            // Pamatuj, ûe klient jiû poslal p¯Ìkaz "downloadimage"
+            // NynÌ se oËek·v· zpr·va FILE_LIST od serveru.
+
+            Console.WriteLine("Waiting for file list from server...");
+
+            // DoËasnÏ pozastavÌme standardnÌ v˝pis zpr·v z ReceiveLoop
+            pauseReadCylce = true;
+
+            string fileListMessage = "";
+            string fileListPrefix = "FILE_LIST:";
+
+            // »ek·me na zpr·vu, kter· zaËÌn· prefixem FILE_LIST:
+            // Pouûijeme kr·tkou smyËku a timeout, aby se vl·kno neblokovalo navûdy.
+            int timeoutMs = 5000;
+            int elapsed = 0;
+
+            while (elapsed < timeoutMs)
+            {
+                if (lastMessage != null && lastMessage.StartsWith("<< " + fileListPrefix))
+                {
+                    // Odebereme prefix '<< ' a 'FILE_LIST:'
+                    fileListMessage = lastMessage.Substring(3 + fileListPrefix.Length);
+                    break;
+                }
+                Thread.Sleep(100);
+                elapsed += 100;
+            }
+
+            if (string.IsNullOrEmpty(fileListMessage))
+            {
+                Console.WriteLine("Download failed: Did not receive file list from server.");
+                pauseReadCylce = false;
+                return;
+            }
+
+            // 1. ZobrazenÌ seznamu a v˝bÏr souboru
+            string[] availableFiles = fileListMessage.Split('|');
+
+            Console.WriteLine("\n--- Available Images ---");
+            for (int i = 0; i < availableFiles.Length; i++)
+            {
+                Console.WriteLine($"  {i + 1}. {availableFiles[i]}");
+            }
+            Console.WriteLine("------------------------");
+
+            Console.Write("Enter the name of the image to download (e.g., photo.jpg): ");
+            string fileNameToDownload = Console.ReadLine().Trim();
+
+            if (string.IsNullOrEmpty(fileNameToDownload))
+            {
+                Console.WriteLine("Download cancelled by user.");
+                pauseReadCylce = false;
+                return;
+            }
+
+            // 2. Odesl·nÌ vybranÈho jmÈna serveru
+            SendMessage(fileNameToDownload);
+
+            // 3. »ek·nÌ na zpr·vu FILE_READY nebo chybu
+            string fileReadyPrefix = "FILE_READY:";
+            string responseMessage = "";
+            long fileSize = 0;
+            string receivedFileName = "";
+
+            // Resetujeme ËasovaË pro Ëek·nÌ na FILE_READY
+            elapsed = 0;
+            timeoutMs = 5000;
+
+            while (elapsed < timeoutMs)
+            {
+                // Kontrola lastMessage (z ReceiveLoop)
+                if (lastMessage != null && lastMessage.StartsWith("<< " + fileReadyPrefix))
+                {
+                    responseMessage = lastMessage.Substring(3 + fileReadyPrefix.Length);
+
+                    // OËek·v·me form·t: n·zev_souboru:velikost
+                    string[] parts = responseMessage.Split(':');
+
+                    if (parts.Length == 2 && long.TryParse(parts[1], out fileSize))
+                    {
+                        receivedFileName = parts[0];
+                        break;
+                    }
+                }
+                else if (lastMessage != null && (lastMessage.Contains("FILE_NOT_FOUND") || lastMessage.Contains("DOWNLOAD_ERROR")))
+                {
+                    // Server odeslal chybu, kterou jiû ReceiveLoop vypsal.
+                    Console.WriteLine("Download was unsuccessful (File not found or server error).");
+                    pauseReadCylce = false;
+                    return;
+                }
+                Thread.Sleep(100);
+                elapsed += 100;
+            }
+
+            if (fileSize == 0) // Znamen·, ûe jsme timeoutnuli nebo neobdrûeli spr·vn˝ prefix
+            {
+                Console.WriteLine("Download failed: Server did not respond with file information or size was zero.");
+                pauseReadCylce = false;
+                return;
+            }
+
+            // 4. Vyû·d·nÌ cesty k uloûenÌ
+            string savePath = PathExists(); // Pouûijeme st·vajÌcÌ metodu pro ovÏ¯enÌ cesty
+            string fullSavePath = Path.Combine(savePath, receivedFileName);
+
+            Console.WriteLine($"Starting download of {receivedFileName} ({fileSize} bytes)...");
 
             try
             {
-                // ----------------------------------------------------
-                // F√ÅZE 1: INICIACE P≈ò√çKAZU
-                // Klient mus√≠ poslat jen n√°zev p≈ô√≠kazu, aby server vƒõdƒõl, co m√° spustit
-                SendMessage(parts[0]); // Ode≈°leme pouze "uploadimage"
-
-                // Server nyn√≠ spustil Execute() a BLOKUJE na prvn√≠m ReadLine()
-
-                // ----------------------------------------------------
-                // F√ÅZE 2: ODPOVƒöƒé NA V√ùZVU SERVERU
-
-                // Klient mus√≠ p≈ôeƒç√≠st v√Ωzvu (nap≈ô. "Enter your image specification...")
-                Console.WriteLine("[CLIENT] ƒåek√°m na v√Ωzvu serveru...");
-
-                // POZOR: Mus√≠me doƒçasnƒõ blokovat a ƒç√≠st v HLAVN√çM vl√°knƒõ,
-                // aby byla zpr√°va serveru p≈ôeƒçtena HNED.
-                // Norm√°ln√≠ p≈ô√≠jem v ReceiveLoop by mohl b√Ωt pomal√Ω.
-
-                string serverPrompt = reader.ReadLine();
-                if (serverPrompt == null) throw new IOException("Spojen√≠ bylo ukonƒçeno.");
-                Console.WriteLine($"[SERVER PROMPT] {serverPrompt.Replace("\n>> ", "")}");
-
-                // Nyn√≠ po≈°leme specifikaci, kterou server oƒçek√°v√° na sv√©m prvn√≠m ReadLine()
-                SendMessage(specificationMessage);
-                Console.WriteLine($"[CLIENT] Odeslal specifikaci: {specificationMessage}");
-
-                // ----------------------------------------------------
-                // F√ÅZE 3: P≈ò√çJEM POTVRZEN√ç
-
-                // ƒåek√°me na potvrzen√≠ serveru, ≈æe je p≈ôipraveno ("Ready to receive...")
-                string serverReady = reader.ReadLine();
-                if (serverReady == null) throw new IOException("Spojen√≠ bylo ukonƒçeno po specifikaci.");
-                Console.WriteLine($"[SERVER CONFIRMATION] {serverReady}");
-
-                // Zde kontrola, zda zpr√°va obsahuje "Ready to receive"
-                if (!serverReady.StartsWith("Ready to receive"))
-                {
-                    throw new InvalidDataException("Server did not confirm readiness to receive data.");
-                }
-
-                // ----------------------------------------------------
-                // F√ÅZE 4: BIN√ÅRN√ç P≈òENOS DAT
-
+                // Zde se prov·dÌ bin·rnÌ p¯enos
                 NetworkStream stream = client.GetStream();
 
-                Console.WriteLine($"[CLIENT] Pos√≠l√°m {fileSize} byt≈Ø bin√°rn√≠ch dat...");
-                stream.Write(imageData, 0, imageData.Length);
-                stream.Flush();
+                // Pouûijeme existujÌcÌ metodu pro bezpeËnÈ p¯eËtenÌ dat
+                byte[] imageData = ReadBytesFromStream(stream, fileSize);
 
-                Console.WriteLine("[CLIENT] Data odesl√°na. ƒåek√°m na koneƒçnou odpovƒõƒè (SUCCESS/ERROR)...");
+                // 5. UloûenÌ souboru
+                File.WriteAllBytes(fullSavePath, imageData);
 
-                // Koneƒçnou zpr√°vu (SUCCESS/ERROR) zachyt√≠ a vyp√≠≈°e vl√°kno ReceiveLoop.
+                Console.WriteLine($"\nFile successfully downloaded and saved to: {fullSavePath}");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"üõë CHYBA UPLOADU: {ex.Message}");
+                Console.WriteLine($"\nFATAL ERROR during download process: {ex.Message}");
+            }
+            finally
+            {
+                // ObnovenÌ standardnÌho v˝pisu zpr·v
+                pauseReadCylce = false;
+            }
+
+            // Po ˙spÏönÈm/ne˙spÏönÈm p¯enosu, Server odeöle fin·lnÌ textovou zpr·vu,
+            // kterou zachytÌ ReceiveLoop. Zde jiû konËÌme DownloadImage.
+        }
+
+        // D·le je nutnÈ upravit ReceiveLoop, aby ne vûdy vypisoval zpr·vu, pokud je pauznut
+
+        // ... (ostatnÌ metody) ...
+    }
+
+    private byte[] ReadBytesFromStream(NetworkStream stream, long count)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                byte[] buffer = new byte[8192];
+                long bytesRemaining = count;
+                int bytesRead;
+
+                // KlÌËovÈ: Tento cyklus musÌ bÏûet, dokud nep¯eËte vöechna data.
+                // Bude se blokovat (Ëekat), pokud data jeötÏ nedorazila,
+                // ale v tomto p¯ÌpadÏ by mÏl server poslat vöechna data najednou.
+                while (bytesRemaining > 0)
+                {
+                    // P¯eËti maxim·lnÏ velikost bufferu, nebo co zb˝v·
+                    int maxRead = (int)Math.Min(buffer.Length, bytesRemaining);
+
+                    bytesRead = stream.Read(buffer, 0, maxRead);
+
+                    if (bytesRead == 0)
+                    {
+                        // Pokud stream.Read vr·tÌ 0, spojenÌ bylo uzav¯eno.
+                        throw new IOException("Connection lost during data transfer.");
+                    }
+
+                    ms.Write(buffer, 0, bytesRead);
+                    bytesRemaining -= bytesRead;
+                }
+
+                // Kontrola, ûe bytesRemaining je 0, je zbyteËn·, protoûe cyklus skonËil,
+                // ale ponech ji, pokud chceö zajistit absolutnÌ jistotu.
+                if (bytesRemaining != 0)
+                {
+                    // Tato Ë·st by se nemÏla nikdy spustit, pokud cyklus dobÏhl
+                    throw new InvalidOperationException("Internal buffer error.");
+                }
+
+                return ms.ToArray();
             }
         }
 
+        /*
+        private byte[] ReadBytesFromStream(NetworkStream stream, long count)
+        {
+            
+            using (MemoryStream ms = new MemoryStream())
+            {
+                byte[] buffer = new byte[8192];
+                long bytesRemaining = count;
+                int bytesRead;
 
+                while (bytesRemaining > 0 && (bytesRead = stream.Read(buffer, 0, (int)Math.Min(buffer.Length, bytesRemaining))) > 0)
+                {
+                    ms.Write(buffer, 0, bytesRead);
+                    bytesRemaining -= bytesRead;
+                    Console.WriteLine(bytesRemaining);
+                }
+
+                if (bytesRemaining != 0)
+                {
+                    throw new IOException("Connection lost, or data was incomplete.");
+                }
+                
+                return ms.ToArray();
+            }
+        }
+        */
+        private string PathExists()
+        {
+            bool pathExists = false;
+            string fullPath = "";
+
+            while (!pathExists)
+            {
+                Console.WriteLine("Enter full path where you want to save the image: ");
+                fullPath = Console.ReadLine().Trim();
+
+                if (Directory.Exists(fullPath))
+                {
+                    pathExists = true;
+                }
+            }
+
+            return fullPath;
+        }
     }
 
 }
+
 

@@ -21,3 +21,8 @@ C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\
 C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\obj\Debug\net8.0\TcpClient.genruntimeconfig.cache
 C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\obj\Debug\net8.0\ref\TcpClient.dll
 C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\TcpClient.dll.config
+C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\System.Drawing.Common.dll
+C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\System.Private.Windows.Core.dll
+C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\System.Private.Windows.GdiPlus.dll
+C:\Users\42060\Documents\Programing\PV\Ctvrtak\PROJEKTY\Parallelization-Project\Client\TcpClient\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll

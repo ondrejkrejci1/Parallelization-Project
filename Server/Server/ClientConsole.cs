@@ -16,8 +16,8 @@ namespace Server
                 { "help", new Help() },
                 { "exit", new Exit() },
                 { "uploadimage", new UploadImage(clientHandler) },
-                { "downloadimage", new DownloadImage() },
-                { "listimage", new ListImage() }
+                { "downloadimage", new DownloadImage(clientHandler) },
+                { "listimage", new ListImage(clientHandler) }
             };
         }
 
@@ -36,14 +36,10 @@ namespace Server
                 }
                 else
                 {
-                    clientHandler.Writer.WriteLine($"Unknown command. Type 'help' for a list of commands. Your input- {commandInput}");
+                    clientHandler.Writer.WriteLine($"<< Unknown command. Type 'help' for a list of commands. Your input- {commandInput}");
 
                 }
-            } catch (NullReferenceException nullImput)
-            {
-                clientHandler.Writer.WriteLine("Connection closed due to invalid input.");
-                isRunning = false;
-            }
+            } 
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);

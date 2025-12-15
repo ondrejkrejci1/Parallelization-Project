@@ -10,13 +10,13 @@ namespace Server
         public string Name { get; private set; }
         public StreamReader Reader { get; private set; }
         public StreamWriter Writer { get; private set; }
-        private Server server;
+        public Server Server { get; private set; }
         private ClientConsole console;
 
         public ClientHandler(TcpClient client, Server server)
         {
             Client = client;
-            this.server = server;
+            Server = server;
             clientHandler = new Thread(Run);
             clientHandler.Start();
         }
@@ -28,7 +28,7 @@ namespace Server
                 Reader = new StreamReader(Client.GetStream(), Encoding.UTF8);
                 Writer = new StreamWriter(Client.GetStream(), Encoding.UTF8) { AutoFlush = true };
 
-                server.AddClient(this);
+                Server.AddClient(this);
 
                 Writer.WriteLine("Welcome to Server for image sharing!");
 

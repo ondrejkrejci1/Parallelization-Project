@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
+    <Compile Remove="UploadedImages\**" />
+    <EmbeddedResource Remove="UploadedImages\**" />
+    <None Remove="UploadedImages\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UploadedImages\" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
   </ItemGroup>
 
 </Project>

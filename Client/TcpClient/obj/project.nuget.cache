@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "h+ujcrQKqbE=",
+  "dgSpecHash": "iKUqBji1lTY=",
   "success": true,
   "projectFilePath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Client\\TcpClient\\TcpClient.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\42060\\.nuget\\packages\\microsoft.win32.systemevents\\10.0.1\\microsoft.win32.systemevents.10.0.1.nupkg.sha512",
     "C:\\Users\\42060\\.nuget\\packages\\system.configuration.configurationmanager\\10.0.1\\system.configuration.configurationmanager.10.0.1.nupkg.sha512",
     "C:\\Users\\42060\\.nuget\\packages\\system.diagnostics.eventlog\\10.0.1\\system.diagnostics.eventlog.10.0.1.nupkg.sha512",
+    "C:\\Users\\42060\\.nuget\\packages\\system.drawing.common\\10.0.1\\system.drawing.common.10.0.1.nupkg.sha512",
     "C:\\Users\\42060\\.nuget\\packages\\system.security.cryptography.protecteddata\\10.0.1\\system.security.cryptography.protecteddata.10.0.1.nupkg.sha512"
   ],
   "logs": []

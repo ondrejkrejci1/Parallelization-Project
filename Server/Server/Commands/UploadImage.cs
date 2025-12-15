@@ -14,7 +14,6 @@ namespace Server.Commands
 
         public string Execute()
         {
-            throw new NotImplementedException();
 
             clientHandler.Writer.WriteLine("Enter your image specification in format:\n>> <filename> <size_in_bytes>\n>> ");
 
@@ -27,8 +26,6 @@ namespace Server.Commands
 
             string fileName = specification[0];
             string fullPath = Path.Combine(UploadDirectory, fileName);
-
-            clientHandler.Writer.WriteLine($"Ready to receive '{fileName}' of size {expectedSize} bytes. Start sending data...");
 
             try
             {
@@ -47,13 +44,13 @@ namespace Server.Commands
                 return $"ERROR: Failed to read image data. {ex.Message}";
             }
 
+            clientHandler.Server.RegisterImage(fileName);
+
             return "SUCCESS: Image '{fileName}' ({expectedSize} bytes) uploaded and registered.";
         }
 
         private byte[] ReadBytesFromStream(NetworkStream stream, long count)
         {
-            // Tato metoda musí číst byty ve smyčce, dokud se nenasbírá očekávaný počet bytů.
-            // Metoda stream.Read() nemusí přečíst všechny byty najednou!
 
             using (MemoryStream ms = new MemoryStream())
             {
