@@ -16,72 +16,53 @@ namespace Server.Commands
         {
             try
             {
-                // 1. Získání seznamu souborů
-                string[] files = Directory.GetFiles(UploadDirectory)
-                                          .Select(Path.GetFileName)
-                                          .ToArray();
+                if (!Directory.Exists(UploadDirectory)) Directory.CreateDirectory(UploadDirectory);
+
+                DirectoryInfo di = new DirectoryInfo(UploadDirectory);
+                var files = di.GetFiles().Select(f => $"{f.Name}:{f.Length}").ToArray();
 
                 if (files.Length == 0)
                 {
-                    return "No images available for download.";
+                    clientHandler.Writer.WriteLine("ERROR:No images available.");
+                    return "No images to offer.";
                 }
 
-                // 2. Odeslání seznamu souborů klientovi
-                string fileList = string.Join("|", files); // Oddělovač pro seznam souborů
-                // Klient obdrží zprávu ve formátu "FILE_LIST:file1.jpg|file2.png|..."
-                clientHandler.Writer.WriteLine($"FILE_LIST:{fileList}");
+                string manifest = string.Join("|", files);
+                clientHandler.Writer.WriteLine($"FILE_LIST:{manifest}");
                 clientHandler.Writer.Flush();
 
-                // 3. Očekávání jména souboru od klienta
-                // Čteme z Readeru, který klient po odeslání listu pošle.
                 string fileName = clientHandler.Reader.ReadLine();
-                if (string.IsNullOrEmpty(fileName))
-                {
-                    return "No file name received from client.";
-                }
+                if (string.IsNullOrEmpty(fileName)) return "Download cancelled by client.";
 
                 string fullPath = Path.Combine(UploadDirectory, fileName);
 
                 if (File.Exists(fullPath))
                 {
-                    // 4. Poslat potvrzení a velikost souboru
-                    long fileSize = new FileInfo(fullPath).Length;
-                    // Odesíláme speciální zprávu, aby se klient připravil na binární přenos.
-                    // Formát: "FILE_READY:název_souboru:velikost"
-                    clientHandler.Writer.WriteLine($"FILE_READY:{fileName}:{fileSize}");
-                    clientHandler.Writer.Flush();
-
-                    // 5. Odeslání souboru binárně
                     using (FileStream fs = File.OpenRead(fullPath))
                     {
-                        // Používáme NetworkStream pro binární přenos
                         NetworkStream networkStream = clientHandler.Client.GetStream();
+
                         byte[] buffer = new byte[8192];
                         int bytesRead;
-
                         while ((bytesRead = fs.Read(buffer, 0, buffer.Length)) > 0)
                         {
                             networkStream.Write(buffer, 0, bytesRead);
+                            Thread.Sleep(100);
                         }
+                        networkStream.Flush();
                     }
-
-                    // Po úspěšném přenosu, vrátíme textovou zprávu pro ClientConsole (na serveru)
-                    return $"File '{fileName}' sent successfully.";
+                    return $"File '{fileName}' sent.";
                 }
                 else
                 {
-                    // 6. Odeslání zprávy o nenalezení souboru
-                    clientHandler.Writer.WriteLine("FILE_NOT_FOUND");
-                    clientHandler.Writer.Flush();
-                    return $"File '{fileName}' not found on server.";
+                    clientHandler.Writer.WriteLine("ERROR:File no longer exists.");
+                    return "File not found.";
                 }
             }
             catch (Exception ex)
             {
-                // V případě chyby zrušíme případné čekání klienta
-                clientHandler.Writer.WriteLine("DOWNLOAD_ERROR");
-                clientHandler.Writer.Flush();
-                return $"Error during image download: {ex.Message}";
+                clientHandler.Writer.WriteLine("ERROR:Server error.");
+                return $"Error: {ex.Message}";
             }
         }
 
@@ -89,6 +70,6 @@ namespace Server.Commands
         {
             return false;
         }
-    
+
     }
 }

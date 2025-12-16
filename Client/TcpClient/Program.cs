@@ -6,7 +6,6 @@
         {
             ImageClient client = new ImageClient();
             client.Connect();
-            
         }
     }
 }

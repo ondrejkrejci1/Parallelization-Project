@@ -1,4 +1,4 @@
-using System.Configuration;
+ï»¿using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -61,6 +61,7 @@ namespace TcpClient
                             {
                                 Thread.Sleep(10);
                                 Console.Write(">> ");
+
                                 string message = Console.ReadLine().Trim();
 
                                 if (string.IsNullOrEmpty(message)) continue;
@@ -84,8 +85,9 @@ namespace TcpClient
                                 }
 
                                 SendMessage(message);
-                            }                            
-                            
+
+                            }
+
                         }
 
 
@@ -116,19 +118,27 @@ namespace TcpClient
             {
                 while (isRunning)
                 {
-                    
-                    string serverMessage = reader.ReadLine();
-                    lastMessage = serverMessage;
+                    try
+                    {
+                        if (pauseReadCylce == false)
+                        {
+                            string serverMessage = reader.ReadLine();
+                            lastMessage = serverMessage;
 
-                    if (serverMessage == null)
-                    {
-                        Console.WriteLine("\n[SERVER CLOSED THIS CONNECTION]");
-                        break;
+                            if (serverMessage == null)
+                            {
+                                Console.WriteLine("\n[SERVER CLOSED THIS CONNECTION]");
+                                break;
+                            }
+                        
+                            Console.Write(serverMessage + "\n");
+                        }
                     }
-                    if (pauseReadCylce == false)
+                    catch (Exception ex)
                     {
-                        Console.Write(serverMessage + "\n");
+
                     }
+
                 }
             }
             catch (IOException)
@@ -207,7 +217,7 @@ namespace TcpClient
                 }
                 Console.WriteLine("The file is not a image.");
             }
-            
+
 
             byte[] imageData = File.ReadAllBytes(fullPath);
             long fileSize = imageData.LongLength;
@@ -250,11 +260,11 @@ namespace TcpClient
                 }
 
 
-                if (File.Exists(fullPath) )
+                if (File.Exists(fullPath))
                 {
                     fileExists = true;
                 }
-                if (File.Exists(Path.Combine(fullPath,fileName)))
+                if (File.Exists(Path.Combine(fullPath, fileName)))
                 {
                     fullPath = Path.Combine(fullPath, fileName);
                     fileExists = true;
@@ -289,191 +299,82 @@ namespace TcpClient
 
         private void DownloadImage()
         {
-            // Pamatuj, že klient již poslal pøíkaz "downloadimage"
-            // Nyní se oèekává zpráva FILE_LIST od serveru.
-
-            Console.WriteLine("Waiting for file list from server...");
-
-            // Doèasnì pozastavíme standardní výpis zpráv z ReceiveLoop
             pauseReadCylce = true;
+            Console.WriteLine("Fetching image list from server...");
 
-            string fileListMessage = "";
-            string fileListPrefix = "FILE_LIST:";
-
-            // Èekáme na zprávu, která zaèíná prefixem FILE_LIST:
-            // Použijeme krátkou smyèku a timeout, aby se vlákno neblokovalo navždy.
-            int timeoutMs = 5000;
-            int elapsed = 0;
-
-            while (elapsed < timeoutMs)
+            string manifestRaw = WaitForMessage("FILE_LIST:", 5000);
+            if (string.IsNullOrEmpty(manifestRaw))
             {
-                if (lastMessage != null && lastMessage.StartsWith("<< " + fileListPrefix))
-                {
-                    // Odebereme prefix '<< ' a 'FILE_LIST:'
-                    fileListMessage = lastMessage.Substring(3 + fileListPrefix.Length);
-                    break;
-                }
-                Thread.Sleep(100);
-                elapsed += 100;
-            }
-
-            if (string.IsNullOrEmpty(fileListMessage))
-            {
-                Console.WriteLine("Download failed: Did not receive file list from server.");
+                Console.WriteLine("Failed to get list.");
                 pauseReadCylce = false;
                 return;
             }
 
-            // 1. Zobrazení seznamu a výbìr souboru
-            string[] availableFiles = fileListMessage.Split('|');
+            var fileMap = manifestRaw.Split('|')
+                .Select(x => x.Split(':'))
+                .ToDictionary(parts => parts[0], parts => long.Parse(parts[1]));
 
-            Console.WriteLine("\n--- Available Images ---");
-            for (int i = 0; i < availableFiles.Length; i++)
+            Console.WriteLine("\n--- Available Images (Size in bytes) ---");
+            foreach (var file in fileMap)
             {
-                Console.WriteLine($"  {i + 1}. {availableFiles[i]}");
+                Console.WriteLine($"- {file.Key} ({file.Value} bytes)");
             }
-            Console.WriteLine("------------------------");
 
-            Console.Write("Enter the name of the image to download (e.g., photo.jpg): ");
-            string fileNameToDownload = Console.ReadLine().Trim();
+            Console.Write("\nEnter file name to download: ");
+            string selectedFile = Console.ReadLine().Trim();
 
-            if (string.IsNullOrEmpty(fileNameToDownload))
+            if (!fileMap.ContainsKey(selectedFile))
             {
-                Console.WriteLine("Download cancelled by user.");
+                Console.WriteLine("Invalid file selection.");
                 pauseReadCylce = false;
                 return;
             }
 
-            // 2. Odeslání vybraného jména serveru
-            SendMessage(fileNameToDownload);
+            SendMessage(selectedFile);
 
-            // 3. Èekání na zprávu FILE_READY nebo chybu
-            string fileReadyPrefix = "FILE_READY:";
-            string responseMessage = "";
-            long fileSize = 0;
-            string receivedFileName = "";
-
-            // Resetujeme èasovaè pro èekání na FILE_READY
-            elapsed = 0;
-            timeoutMs = 5000;
-
-            while (elapsed < timeoutMs)
-            {
-                // Kontrola lastMessage (z ReceiveLoop)
-                if (lastMessage != null && lastMessage.StartsWith("<< " + fileReadyPrefix))
-                {
-                    responseMessage = lastMessage.Substring(3 + fileReadyPrefix.Length);
-
-                    // Oèekáváme formát: název_souboru:velikost
-                    string[] parts = responseMessage.Split(':');
-
-                    if (parts.Length == 2 && long.TryParse(parts[1], out fileSize))
-                    {
-                        receivedFileName = parts[0];
-                        break;
-                    }
-                }
-                else if (lastMessage != null && (lastMessage.Contains("FILE_NOT_FOUND") || lastMessage.Contains("DOWNLOAD_ERROR")))
-                {
-                    // Server odeslal chybu, kterou již ReceiveLoop vypsal.
-                    Console.WriteLine("Download was unsuccessful (File not found or server error).");
-                    pauseReadCylce = false;
-                    return;
-                }
-                Thread.Sleep(100);
-                elapsed += 100;
-            }
-
-            if (fileSize == 0) // Znamená, že jsme timeoutnuli nebo neobdrželi správný prefix
-            {
-                Console.WriteLine("Download failed: Server did not respond with file information or size was zero.");
-                pauseReadCylce = false;
-                return;
-            }
-
-            // 4. Vyžádání cesty k uložení
-            string savePath = PathExists(); // Použijeme stávající metodu pro ovìøení cesty
-            string fullSavePath = Path.Combine(savePath, receivedFileName);
-
-            Console.WriteLine($"Starting download of {receivedFileName} ({fileSize} bytes)...");
+            long sizeToRead = fileMap[selectedFile];
 
             try
             {
-                // Zde se provádí binární pøenos
-                NetworkStream stream = client.GetStream();
+                Console.WriteLine($"Downloading {selectedFile}...");
+                byte[] data = ReadBytesFromStream(client.GetStream(), sizeToRead);
 
-                // Použijeme existující metodu pro bezpeèné pøeètení dat
-                byte[] imageData = ReadBytesFromStream(stream, fileSize);
 
-                // 5. Uložení souboru
-                File.WriteAllBytes(fullSavePath, imageData);
-
-                Console.WriteLine($"\nFile successfully downloaded and saved to: {fullSavePath}");
-
+                string savePath = PathExists();
+                string fullPath = Path.Combine(savePath, selectedFile);
+                File.WriteAllBytes(fullPath, data);
+                Console.WriteLine("Success! Saved to: " + fullPath);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nFATAL ERROR during download process: {ex.Message}");
-            }
-            finally
-            {
-                // Obnovení standardního výpisu zpráv
-                pauseReadCylce = false;
+                Console.WriteLine("Download failed: " + ex.Message);
             }
 
-            // Po úspìšném/neúspìšném pøenosu, Server odešle finální textovou zprávu,
-            // kterou zachytí ReceiveLoop. Zde již konèíme DownloadImage.
+
+
+            pauseReadCylce = false;
         }
 
-        // Dále je nutné upravit ReceiveLoop, aby ne vždy vypisoval zprávu, pokud je pauznut
-
-        // ... (ostatní metody) ...
-    }
-
-    private byte[] ReadBytesFromStream(NetworkStream stream, long count)
+        private string WaitForMessage(string prefix, int timeoutMs)
         {
-            using (MemoryStream ms = new MemoryStream())
+            int elapsed = 0;
+            while (elapsed < timeoutMs)
             {
-                byte[] buffer = new byte[8192];
-                long bytesRemaining = count;
-                int bytesRead;
-
-                // Klíèové: Tento cyklus musí bìžet, dokud nepøeète všechna data.
-                // Bude se blokovat (èekat), pokud data ještì nedorazila,
-                // ale v tomto pøípadì by mìl server poslat všechna data najednou.
-                while (bytesRemaining > 0)
+                if (lastMessage != null && lastMessage.Contains(prefix))
                 {
-                    // Pøeèti maximálnì velikost bufferu, nebo co zbývá
-                    int maxRead = (int)Math.Min(buffer.Length, bytesRemaining);
+                    string content = lastMessage.Substring(lastMessage.IndexOf(prefix) + prefix.Length);
+                    lastMessage = null;
 
-                    bytesRead = stream.Read(buffer, 0, maxRead);
-
-                    if (bytesRead == 0)
-                    {
-                        // Pokud stream.Read vrátí 0, spojení bylo uzavøeno.
-                        throw new IOException("Connection lost during data transfer.");
-                    }
-
-                    ms.Write(buffer, 0, bytesRead);
-                    bytesRemaining -= bytesRead;
+                    return content;
                 }
-
-                // Kontrola, že bytesRemaining je 0, je zbyteèná, protože cyklus skonèil,
-                // ale ponech ji, pokud chceš zajistit absolutní jistotu.
-                if (bytesRemaining != 0)
-                {
-                    // Tato èást by se nemìla nikdy spustit, pokud cyklus dobìhl
-                    throw new InvalidOperationException("Internal buffer error.");
-                }
-
-                return ms.ToArray();
+                Thread.Sleep(100);
+                elapsed += 100;
             }
+            return null;
         }
 
-        /*
         private byte[] ReadBytesFromStream(NetworkStream stream, long count)
         {
-            
             using (MemoryStream ms = new MemoryStream())
             {
                 byte[] buffer = new byte[8192];
@@ -484,18 +385,18 @@ namespace TcpClient
                 {
                     ms.Write(buffer, 0, bytesRead);
                     bytesRemaining -= bytesRead;
-                    Console.WriteLine(bytesRemaining);
+                    Thread.Sleep(100);
                 }
 
                 if (bytesRemaining != 0)
                 {
                     throw new IOException("Connection lost, or data was incomplete.");
                 }
-                
+
                 return ms.ToArray();
             }
         }
-        */
+
         private string PathExists()
         {
             bool pathExists = false;

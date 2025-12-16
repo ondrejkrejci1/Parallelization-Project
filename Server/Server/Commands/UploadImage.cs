@@ -14,7 +14,7 @@ namespace Server.Commands
 
         public string Execute()
         {
-
+            
             clientHandler.Writer.WriteLine("Enter your image specification in format:\n>> <filename> <size_in_bytes>\n>> ");
 
             string[] specification = clientHandler.Reader.ReadLine().Split(' ', 2);
@@ -51,7 +51,6 @@ namespace Server.Commands
 
         private byte[] ReadBytesFromStream(NetworkStream stream, long count)
         {
-
             using (MemoryStream ms = new MemoryStream())
             {
                 byte[] buffer = new byte[8192];
@@ -62,6 +61,7 @@ namespace Server.Commands
                 {
                     ms.Write(buffer, 0, bytesRead);
                     bytesRemaining -= bytesRead;
+                    Console.WriteLine(bytesRemaining);
                 }
 
                 if (bytesRemaining != 0)
