@@ -3,7 +3,11 @@ using System.Net;
 
 namespace Server
 {
-    internal class Program
+    /// <summary>
+    /// Represents the entry point of the server application.
+    /// Responsible for reading configuration, initializing the server, and handling the application lifecycle.
+    /// </summary>
+    public class Program
     {
         static void Main(string[] args)
         {
