@@ -68,6 +68,7 @@ namespace Server.Commands
 
             clientHandler.Server.RegisterImage(fileName);
 
+            clientHandler.Server.Logger.Log($"User {clientHandler.Name}: Uploaded new image - {fileName} ({expectedSize} bytes)");
             return "SUCCESS: Image '{fileName}' ({expectedSize} bytes) uploaded and registered.";
         }
 

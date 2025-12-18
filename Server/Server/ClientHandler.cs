@@ -64,6 +64,7 @@ namespace Server
                 Writer = new StreamWriter(Client.GetStream(), Encoding.UTF8) { AutoFlush = true };
 
                 Server.AddClient(this);
+                Server.PrintMessage("New client joined the server");
 
                 Writer.WriteLine("Welcome to Server for image sharing!");
 
@@ -73,7 +74,7 @@ namespace Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in client handler: {ex.Message}");
+                Server.PrintMessage($"Error in client handler: {ex.Message}");
             }
         }
 
@@ -92,8 +93,13 @@ namespace Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error closing connection for {Name}: {ex.Message}");
+                Server.PrintMessage($"Error closing connection for {Name}: {ex.Message}");
             }
+        }
+
+        public void SetName(string name)
+        {
+            Name = name;
         }
     }
 

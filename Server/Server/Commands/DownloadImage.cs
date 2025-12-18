@@ -71,6 +71,9 @@ namespace Server.Commands
                         }
                         networkStream.Flush();
                     }
+
+                    clientHandler.Server.Logger.Log($"User {clientHandler.Name}: Downloaded image - {fileName}");
+
                     return $"File '{fileName}' sent.";
                 }
                 else

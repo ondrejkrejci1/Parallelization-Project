@@ -26,7 +26,8 @@ namespace Server
                 { "exit", new Exit() },
                 { "uploadimage", new UploadImage(clientHandler) },
                 { "downloadimage", new DownloadImage(clientHandler) },
-                { "listimage", new ListImage(clientHandler) }
+                { "listimage", new ListImage(clientHandler) },
+                { "setName", new SetName(clientHandler) }
             };
         }
 
@@ -51,12 +52,11 @@ namespace Server
                 else
                 {
                     clientHandler.Writer.WriteLine($"<< Unknown command. Type 'help' for a list of commands. Your input- {commandInput}");
-
                 }
             } 
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                clientHandler.Server.PrintMessage(ex.Message);
             }
 
         }
@@ -75,12 +75,13 @@ namespace Server
                     Do();
                 } while (isRunning);
 
+                clientHandler.Server.Logger.Log($"Client {clientHandler.Name} disconnected.");
                 clientHandler.Stop();
                 clientHandler.Server.RemoveClient(clientHandler);
             } 
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                clientHandler.Server.PrintMessage(ex.Message);
             }
         }
 

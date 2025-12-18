@@ -14,6 +14,7 @@ namespace Server
         private Thread clientAcceptor;
         private List<ClientHandler> clients;
         private List<string> images;
+        public Logger Logger { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the Server class.
@@ -23,6 +24,7 @@ namespace Server
         /// <param name="port">The port number to listen on.</param>
         public Server(IPAddress ipaddress, int port)
         {
+            Logger = new Logger();
             listener = new TcpListener(ipaddress, port);
             clients = new List<ClientHandler>();
             clientAcceptor = new Thread(AcceptClient);
@@ -173,6 +175,15 @@ namespace Server
         public List<string> GetRegisteredImages()
         {
             return images;
+        }
+
+        /// <summary>
+        /// Displays a message on the server console.
+        /// </summary>
+        /// <param name="message">Message to be displayed</param>
+        public void PrintMessage(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

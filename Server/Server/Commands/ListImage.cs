@@ -40,6 +40,8 @@
                 result += $"- {image}\n";
             }
 
+            clientHandler.Server.Logger.Log($"User {clientHandler.Name}: Listed images");
+
             return result;
         }
 
