@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\clientconsole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\clientconsole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -27,16 +35,8 @@
       "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\clienthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\clienthandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|c:\\users\\42060\\documents\\programing\\pv\\ctvrtak\\projekty\\parallelization-project\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1D44E2EC-75A1-47E1-8526-D24A6AE852CB}|Server\\Server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,7 +54,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "ListImage.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Commands\\ListImage.cs",
               "RelativeDocumentMoniker": "Server\\Commands\\ListImage.cs",
@@ -62,12 +62,11 @@
               "RelativeToolTip": "Server\\Commands\\ListImage.cs",
               "ViewState": "AgIAAA4AAAAAAAAAAAAUwDkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T20:01:40.627Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T20:01:40.627Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "DownloadImage.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Commands\\DownloadImage.cs",
               "RelativeDocumentMoniker": "Server\\Commands\\DownloadImage.cs",
@@ -75,12 +74,11 @@
               "RelativeToolTip": "Server\\Commands\\DownloadImage.cs",
               "ViewState": "AgIAACcAAAAAAAAAAAAowEoAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T19:58:48.944Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T19:58:48.944Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "Logger.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Logger.cs",
               "RelativeDocumentMoniker": "Server\\Logger.cs",
@@ -88,12 +86,11 @@
               "RelativeToolTip": "Server\\Logger.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T19:48:05.335Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T19:48:05.335Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "SetName.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Commands\\SetName.cs",
               "RelativeDocumentMoniker": "Server\\Commands\\SetName.cs",
@@ -101,12 +98,11 @@
               "RelativeToolTip": "Server\\Commands\\SetName.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAgwCcAAABnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T19:35:22.261Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T19:35:22.261Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "UploadImage.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Commands\\UploadImage.cs",
               "RelativeDocumentMoniker": "Server\\Commands\\UploadImage.cs",
@@ -114,25 +110,24 @@
               "RelativeToolTip": "Server\\Commands\\UploadImage.cs",
               "ViewState": "AgIAACIAAAAAAAAAAAAgwEYAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T19:30:52.982Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T19:30:52.982Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "ClientConsole.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\ClientConsole.cs",
               "RelativeDocumentMoniker": "Server\\ClientConsole.cs",
               "ToolTip": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\ClientConsole.cs",
               "RelativeToolTip": "Server\\ClientConsole.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAgwE0AAABOAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAgwCIAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-17T21:23:32.77Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "ClientHandler.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\ClientHandler.cs",
               "RelativeDocumentMoniker": "Server\\ClientHandler.cs",
@@ -140,31 +135,30 @@
               "RelativeToolTip": "Server\\ClientHandler.cs",
               "ViewState": "AgIAAA4AAAAAAAAAAAAQwCQAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T21:19:25.41Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T21:19:25.41Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "Server.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Server.cs",
               "RelativeDocumentMoniker": "Server\\Server.cs",
               "ToolTip": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Server.cs",
               "RelativeToolTip": "Server\\Server.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABoAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAA1wC4AAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-17T21:00:52.476Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Program.cs",
               "RelativeDocumentMoniker": "Server\\Program.cs",
               "ToolTip": "C:\\Users\\42060\\Documents\\Programing\\PV\\Ctvrtak\\PROJEKTY\\Parallelization-Project\\Server\\Server\\Program.cs",
               "RelativeToolTip": "Server\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-17T21:00:47.051Z",
               "EditorCaption": ""

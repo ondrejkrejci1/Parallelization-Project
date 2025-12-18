@@ -17,10 +17,9 @@ namespace Server
             int port = int.Parse(appSettings["Port"]);
 
             Server server = new Server(ipAddress,port);
-
-            Console.WriteLine($"Server runs at: {ipAddress} - {port}");
             server.Start();
 
+            Console.WriteLine("Type 'stop' to stop the server.");
             while (true)
             {
                 string? command = Console.ReadLine();

@@ -16,6 +16,9 @@ namespace Server
         private List<string> images;
         public Logger Logger { get; private set; }
 
+        private IPAddress ipaddress;
+        private int port;
+
         /// <summary>
         /// Initializes a new instance of the Server class.
         /// Sets up the TCP listener and loads existing images from the storage directory.
@@ -24,6 +27,8 @@ namespace Server
         /// <param name="port">The port number to listen on.</param>
         public Server(IPAddress ipaddress, int port)
         {
+            this.ipaddress = ipaddress;
+            this.port = port;
             Logger = new Logger();
             listener = new TcpListener(ipaddress, port);
             clients = new List<ClientHandler>();
@@ -39,7 +44,7 @@ namespace Server
             listener.Start();
             isRunning = true;
             clientAcceptor.Start();
-            Console.WriteLine("Server started.");
+            PrintMessage($"Server started at {ipaddress}:{port}");
         }
 
         /// <summary>
