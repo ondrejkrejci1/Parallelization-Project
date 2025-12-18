@@ -28,7 +28,7 @@ TCP server written in C# designed for image sharing
      Go to: `TcpClient/bin/Debug/net8.0/`
      Run: `TcpClient.exe`
 
-## ⚙️ Configuration
+## Configuration
 
 Both the Server and Client applications use an `App.config` file to define network settings. Ensure both are set to the same port.
 
@@ -40,7 +40,7 @@ Both the Server and Client applications use an `App.config` file to define netwo
   </appSettings>
 </configuration>
 ```
-## ❓ Help & Support
+## Help & Support
 
 If you run into any issues with the installation or have questions about the implementation, feel free to reach out.
 
