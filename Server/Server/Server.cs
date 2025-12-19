@@ -41,6 +41,7 @@ namespace Server
         /// </summary>
         public void Start()
         {
+            Logger.Log("Server started");
             listener.Start();
             isRunning = true;
             clientAcceptor.Start();
